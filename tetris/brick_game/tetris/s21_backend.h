@@ -123,7 +123,7 @@ GameStruct *Load(FILE *f);
 void Save(GameStruct *obj, FILE *f);
 
 // Public methods not related to memory:
-int GetBlock(GameStruct *obj, int row, int col);
+char GetBlock(GameStruct *obj, int row, int col);
 bool CheckIfInsideTheBoard(GameStruct *obj, int row, int col);
 bool PerformTick(GameStruct *obj, tetris_move move);
 void Print(GameStruct *obj, FILE *f);

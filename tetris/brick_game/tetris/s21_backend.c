@@ -59,7 +59,7 @@ int GRAVITY_LEVEL[MAX_LEVEL+1] = {
 
 //Возвращает блок на определенных кооориднатах
 
-int GetBlock(GameStruct *obj, int row, int column)
+char GetBlock(GameStruct *obj, int row, int column)
 {
     int res = obj->board[obj->cols * row + column];
     return res;
