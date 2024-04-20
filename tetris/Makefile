@@ -9,7 +9,7 @@ FLAGS=-std=c11 -g -Wall -Werror -Wextra
 S21_tetris=-L. s21_backend.a
 # DEBUG =-g
 CTESTFLAGS=-lcheck -lm -lpthread 
-# FIND_CHECK=$(shell pkg-config --cflags --libs check)
+FIND_CHECK=$(shell pkg-config --cflags --libs check)
 TEST = tests.c
 LIBRARY = s21_backend.a
 
