@@ -65,11 +65,8 @@ char GetBlock(GameStruct *obj, int row, int column)
     return res;
 }
 
-//Установить фигуру на определенные кординаты (row and col)
-static void SetBlock(GameStruct *obj, int row, int column, char value)
-{
-  obj->board[obj->cols * row + column] = value;
-}
+
+
 
  // проверяет находится ли фигура на игровом поле
 
@@ -81,48 +78,6 @@ return false;
 }
 
 
-static void PutFigure(GameStruct *obj, Block block)
-{
-  int i;
-  for (i = 0; i < 4; i++) {
-    tetris_location cell = tet_templates[block.a][block.orientation][i];
-    SetBlock(obj, block.loc.row + cell.row, block.loc.col + cell.col,
-           COORDINATE_TO_CELL(block.a));
-  }
-}
-
-
-
-static void RemoveBlock(GameStruct *obj, Block block)
-{
-  int i;
-  for (i = 0; i < 4; i++) {
-    tetris_location cell = tet_templates[block.a][block.orientation][i];
-    SetBlock(obj, block.loc.row + cell.row, block.loc.col + cell.col, TC_EMPTY);
-  }
-}
-
-
- // Проверка может ли фигура быть установлена на игровом поле
-
-static bool CheckIfBlockFits(GameStruct *obj, Block block)
-{
-  int SIZE, r, c;
-  for (SIZE = 0; SIZE < 4; SIZE++) {
-    tetris_location cell = tet_templates[block.a][block.orientation][SIZE];
-    r = block.loc.row + cell.row;
-    c = block.loc.col + cell.col;
-    if (!CheckIfInsideTheBoard(obj, r, c) || TC_IS_FILLED(GetBlock(obj, r, c))) {
-      return false;
-    }
-  }
-  return true;
-}
-
-
-static int random_tetromino(void) {
-  return rand() % 7;
-}
 
 
 static void RandomFallingBlock(GameStruct *obj)
@@ -186,7 +141,7 @@ static void AccelerationToBottom(GameStruct *obj)
 
   //повернуть фигуру (+/-1).
  
-static void Rotate(GameStruct *obj, int direction)
+void Rotate(GameStruct *obj, int direction)
 {
   RemoveBlock(obj, obj->falling);
 
@@ -262,7 +217,7 @@ static void PerformAction(GameStruct *obj, tetris_move move)
 }
 
 
-static bool CheckIfLineIsFull(GameStruct *obj, int i)
+bool CheckIfLineIsFull(GameStruct *obj, int i)
 {
   int j;
   for (j = 0; j < obj->cols; j++) {
