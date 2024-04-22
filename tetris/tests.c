@@ -39,11 +39,12 @@ DestroyGame(tg);
 END_TEST
 
 
-//какая-то херня
+//какая-то херня, как правильно проверить, что фигура была поставлена на поле?
 START_TEST(putfigure_test) {
 GameStruct *tg = NULL;
 tg = CreateGame(20, 10);
 PutFigure(tg, tg->falling);
+// ck_assert(tg->falling.a != 0);
 DestroyGame(tg);
 }
 END_TEST
@@ -66,6 +67,7 @@ tg = CreateGame(20, 10);
 PutFigure(tg, tg->falling);
 RemoveBlock(tg, tg->falling);
 ck_assert_int_eq(tg->falling.a, 0);
+DestroyGame(tg);
 
 }
 END_TEST
@@ -75,7 +77,8 @@ START_TEST(random_tetromino_test) {
   GameStruct *tg = NULL;
   tg = CreateGame(10,20);
   tg->falling.a = random_tetromino();
-  ck_assert_int_ne(tg->falling.a,0);
+  ck_assert_int_ne(tg->falling.a, 0);
+  DestroyGame(tg);
 }
 END_TEST
 
@@ -87,129 +90,102 @@ START_TEST(CheckIfBlockFits_test) {
   tet.orientation = 1;
   // tetris_location cell = tet_templates[tet.a][tet.orientation][4];
   ck_assert_int_eq(CheckIfBlockFits(tg, tet), 0);
+  DestroyGame(tg);
+
+}
+END_TEST
+
+START_TEST(RandomFallingBlock_test) {
+  GameStruct *tg = NULL;
+  tg = CreateGame(10,20);
+  RandomFallingBlock(tg);
+  ck_assert(tg->next.a != 0);
+  DestroyGame(tg);
+}
+END_TEST
+
+
+START_TEST(Tick_test) {
+  GameStruct *tg = NULL;
+  tg = CreateGame(10,20);
+  tg->ticks_till_gravity = 2;
+  ck_assert_int_eq(GRAVITY_LEVEL[tg->level], 50);
+  DestroyGame(tg);
 
 }
 END_TEST
 
 
+START_TEST(Move_test) {
+  GameStruct *tg = NULL;
+  tg = CreateGame(10,20);
+  Move(tg, -1);
+  ck_assert(tg->falling.loc.col = -1);
+  DestroyGame(tg);
+}
+END_TEST
+
+
+
+
+START_TEST(AccelerationToBottom_test) {
+  // GameStruct *tg = NULL;
+  // tg = CreateGame(10,20);
+
+}
+END_TEST
+
+
+START_TEST(Rotate_test) {
+  // GameStruct *tg = NULL;
+  // tg = CreateGame(10,20);
+
+}
+END_TEST
+
+
+START_TEST(TakeFromHoldBuffer_test) {
+  // GameStruct *tg = NULL;
+  // tg = CreateGame(10,20);
+}
+END_TEST
+
+//как в тесте прописать , что line is full?
 START_TEST(CheckIfLineIsFull_test) {
   GameStruct *tg = NULL;
   tg = CreateGame(10,20);
   int i = 5;
   ck_assert_int_eq(CheckIfLineIsFull(tg, i), 0);
+  DestroyGame(tg);
 }
 END_TEST
 
-// START_TEST(test_s21_sub_matrix_3) {
-//   matrix_t temp;
-//   matrix_t temp2;
-//   matrix_t result;
-//   s21_create_matrix(3, 2, &temp);
-//   s21_create_matrix(2, 2, &temp2);
-//   s21_gen_matrix(&temp);
-//   s21_gen_matrix(&temp2);
-//   ck_assert_int_eq(s21_sub_matrix(&temp, &temp2, &result), 1);
-//   s21_remove_matrix(&temp);
-//   s21_remove_matrix(&temp2);
-//   // if (s21_sub_matrix(&temp, &temp2, &result)) s21_remove_matrix(&result);
-// }
-// END_TEST
 
-// START_TEST(test_s21_mult_number) {
-//   matrix_t temp;
-//   matrix_t temp2;
-//   matrix_t result;
-//   matrix_t result_defolt;
-//   double num = 777.777;
-//   s21_create_matrix(3, 3, &temp);
-//   s21_create_matrix(3, 3, &temp2);
-//   s21_create_matrix(3, 3, &result_defolt);
-//   s21_gen_matrix(&temp);
-//   s21_gen_matrix(&temp2);
-//   for (int i = 0; (i < temp.rows); i++) {
-//     for (int j = 0; j < temp.columns; j++) {
-//       result_defolt.matrix[i][j] = temp.matrix[i][j] * 777.777;
-//     }
-//   }
-//   ck_assert_int_eq(s21_mult_number(&temp, num, &result), 0);
-//   ck_assert_int_eq(s21_eq_matrix(&result_defolt, &result), 1);
-//   s21_remove_matrix(&temp);
-//   s21_remove_matrix(&temp2);
-//   s21_remove_matrix(&result);
-//   s21_remove_matrix(&result_defolt);
-// }
-// END_TEST
 
-// START_TEST(test_s21_mult_number_2) {
-//   matrix_t temp;
-//   matrix_t temp2;
-//   matrix_t result;
-//   matrix_t result_defolt;
-//   double num = 777.777;
-//   s21_create_matrix(3, 3, &temp);
-//   s21_create_matrix(3, 3, &temp2);
-//   s21_create_matrix(3, 3, &result_defolt);
-//   s21_gen_matrix(&temp);
-//   s21_gen_matrix(&temp2);
-//   for (int i = 0; i < temp.rows; i++) {
-//     for (int j = 0; j < temp.columns; j++) {
-//       result_defolt.matrix[i][j] = temp.matrix[i][j] * 777.777;
-//     }
-//   }
-//   ck_assert_int_eq(s21_mult_number(&temp, num, &result), 0);
-//   ck_assert_int_eq(s21_eq_matrix(&result_defolt, &result), 1);
-//   s21_remove_matrix(&temp);
-//   s21_remove_matrix(&temp2);
-//   s21_remove_matrix(&result);
-//   s21_remove_matrix(&result_defolt);
-// }
-// END_TEST
+START_TEST(ShiftLines_test) {
+  // GameStruct *tg = NULL;
+  // tg = CreateGame(10,20);
+}
+END_TEST
 
-// START_TEST(test_s21_mult_matrix) {
-//   matrix_t A;
-//   matrix_t B;
-//   matrix_t result;
-//   s21_create_matrix(1, 1, &A);
-//   s21_create_matrix(1, 1, &B);
-//   A.matrix[0][0] = 1;
-//   B.matrix[0][0] = 2;
-//   ck_assert_int_eq(s21_mult_matrix(&A, &B, &result), 0);
-//   s21_remove_matrix(&A);
-//   s21_remove_matrix(&B);
-//   s21_remove_matrix(&result);
-//   if (s21_mult_matrix(&A, &B, &result)) {
-//     s21_remove_matrix(&result);
-//   }
-// }
-// END_TEST
+START_TEST(CheckLines_test) {
+  // GameStruct *tg = NULL;
+  // tg = CreateGame(10,20);
 
-// START_TEST(test_s21_mult_matrix_2) {
-//   matrix_t temp;
-//   matrix_t temp2;
-//   matrix_t result;
-//   matrix_t result_defolt;
-//   s21_create_matrix(3, 2, &temp);
-//   s21_create_matrix(2, 3, &temp2);
-//   s21_create_matrix(3, 3, &result_defolt);
-//   s21_gen_matrix(&temp);
-//   s21_gen_matrix(&temp2);
-//   result_defolt.matrix[0][0] = 9;
-//   result_defolt.matrix[0][1] = 12;
-//   result_defolt.matrix[0][2] = 15;
-//   result_defolt.matrix[1][0] = 19;
-//   result_defolt.matrix[1][1] = 26;
-//   result_defolt.matrix[1][2] = 33;
-//   result_defolt.matrix[2][0] = 29;
-//   result_defolt.matrix[2][1] = 40;
-//   result_defolt.matrix[2][2] = 51;
-//   ck_assert_int_eq(s21_mult_matrix(&temp, &temp2, &result), 0);
-//   ck_assert_int_eq(s21_eq_matrix(&result_defolt, &result), 1);
-//   s21_remove_matrix(&temp);
-//   s21_remove_matrix(&temp2);
-//   s21_remove_matrix(&result);
-//   s21_remove_matrix(&result_defolt);
-// }
-// END_TEST
+}
+END_TEST
+
+START_TEST(AdjustScore_test) {
+  // GameStruct *tg = NULL;
+  // tg = CreateGame(10,20);
+
+}
+END_TEST
+
+START_TEST(Game_over_test) {
+
+}
+END_TEST
 
 
 
@@ -228,29 +204,18 @@ int main() {
   tcase_add_test(tc_1, removeblock_test);
   tcase_add_test(tc_1, random_tetromino_test);
   tcase_add_test(tc_1, CheckIfBlockFits_test);
+  tcase_add_test(tc_1, RandomFallingBlock_test);
+  tcase_add_test(tc_1, Tick_test);
+  tcase_add_test(tc_1, Move_test);
   tcase_add_test(tc_1, CheckIfLineIsFull_test);
-//   tcase_add_test(tc_1, test_s21_sub_matrix_3);
-//   tcase_add_test(tc_1, test_s21_mult_number);
-//   tcase_add_test(tc_1, test_s21_mult_number_2);
-//   tcase_add_test(tc_1, test_s21_mult_matrix);
-//   tcase_add_test(tc_1, test_s21_mult_matrix_2);
-//   tcase_add_test(tc_1, test_s21_mult_matrix_4);
-//   tcase_add_test(tc_1, test_s21_mult_matrix_3);
-//   tcase_add_test(tc_1, test_s21_transpose);
-//   tcase_add_test(tc_1, test_s21_transpose_2);
-//   tcase_add_test(tc_1, test_s21_determinant);
-//   tcase_add_test(tc_1, test_s21_determinant_2);
-//   tcase_add_test(tc_1, test_s21_determinant_3);
-//   tcase_add_test(tc_1, test_s21_determinant_5);
-//   tcase_add_test(tc_1, test_s21_determinant_6);
-//   tcase_add_test(tc_1, test_s21_determinant_7);
-//   tcase_add_test(tc_1, test_s21_calc_complements);
-//   tcase_add_test(tc_1, test_s21_calc_complements_2);
-//   tcase_add_test(tc_1, test_s21_calc_complements_3);
-//   tcase_add_test(tc_1, test_s21_inverse_matrix);
-//   tcase_add_test(tc_1, test_s21_inverse_matrix_2);
-//   tcase_add_test(tc_1, test_s21_inverse_matrix_3);
-//   tcase_add_test(tc_1, test_s21_inverse_matrix_4);
+  tcase_add_test(tc_1, AccelerationToBottom_test);
+  tcase_add_test(tc_1, Rotate_test);
+  tcase_add_test(tc_1, TakeFromHoldBuffer_test);
+  tcase_add_test(tc_1, ShiftLines_test); 
+   tcase_add_test(tc_1, CheckLines_test);
+  tcase_add_test(tc_1, AdjustScore_test);
+  tcase_add_test(tc_1, Game_over_test);
+
 
 
   srunner_set_fork_status(sr, CK_NOFORK);

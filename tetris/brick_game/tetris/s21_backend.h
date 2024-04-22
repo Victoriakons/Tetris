@@ -127,6 +127,7 @@ char GetBlock(GameStruct *obj, int row, int col);
 bool CheckIfInsideTheBoard(GameStruct *obj, int row, int col);
 bool PerformTick(GameStruct *obj, tetris_move move);
 void Print(GameStruct *obj, FILE *f);
+void AccelerationToBottom(GameStruct *obj);
 
 
 //Установить фигуру на определенные кординаты (row and col)
@@ -178,7 +179,9 @@ static bool CheckIfBlockFits(GameStruct *obj, Block block)
 
 void Rotate(GameStruct *obj, int direction);
 bool CheckIfLineIsFull(GameStruct *obj, int i);
-
+void RandomFallingBlock(GameStruct *obj);
+void Tick(GameStruct *obj);
+void Move(GameStruct *obj, int direction);
 #endif // TETRIS_H
 
 

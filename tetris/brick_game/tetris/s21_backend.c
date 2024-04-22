@@ -80,7 +80,7 @@ return false;
 
 
 
-static void RandomFallingBlock(GameStruct *obj)
+void RandomFallingBlock(GameStruct *obj)
 {
   obj->falling = obj->next; //next - новый падающий объект
   obj->next.a = random_tetromino();
@@ -93,7 +93,7 @@ static void RandomFallingBlock(GameStruct *obj)
 /*
   Tick gravity, and move the block down if gravity should act.
  */
-static void Tick(GameStruct *obj)
+void Tick(GameStruct *obj)
 {
   obj->ticks_till_gravity--;
   if (obj->ticks_till_gravity <= 0) {
@@ -114,7 +114,7 @@ static void Tick(GameStruct *obj)
 
 //left (-1) or right (+1)
 
-static void Move(GameStruct *obj, int direction)
+void Move(GameStruct *obj, int direction)
 {
   RemoveBlock(obj, obj->falling);
   obj->falling.loc.col += direction;
@@ -127,7 +127,7 @@ static void Move(GameStruct *obj, int direction)
 
 //ускорить падение вниз
 
-static void AccelerationToBottom(GameStruct *obj)
+void AccelerationToBottom(GameStruct *obj)
 {
   RemoveBlock(obj, obj->falling);
   while (CheckIfBlockFits(obj, obj->falling)) {
