@@ -46,12 +46,12 @@ clean:
 style:
 	clang-format -style=google -i *.c
 	clang-format -style=google -i *.h
-	clang-format -style=google -n *.c
-	clang-format -style=google -n *.h
+
 
 checkstyle:
 	clang-format -style=google -n *.c
 	clang-format -style=google -n *.h
+
 
 de: $(TARGET)
   

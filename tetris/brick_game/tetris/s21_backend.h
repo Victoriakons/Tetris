@@ -1,21 +1,22 @@
 #ifndef BACKEND_H
 #define BACKEND_H
 
-#include <stdio.h> // for FILE
-#include <stdbool.h> // for bool
-
+#include <stdbool.h>  // for bool
+#include <stdio.h>    // for FILE
 
 /*
-координата x преобразуется в координату ячейки путем добавления единицы. 
+координата x преобразуется в координату ячейки путем добавления единицы.
 Так как координаты ячеек начинаются с 1, а не с 0.
  */
-#define COORDINATE_TO_CELL(x) ((x)+1)
+#define COORDINATE_TO_CELL(x) ((x) + 1)
 
 /*
   Strings для поля тетриса
  */
 #define TC_EMPTY_STR " "
-#define TC_BLOCK_STR "\u2588" //Символ \u2588 - это символ игральной кости в Юникоде, который часто используется для представления блоков
+#define TC_BLOCK_STR \
+  "\u2588"  //Символ \u2588 - это символ игральной кости в Юникоде, который
+            //часто используется для представления блоков
 
 /*
   Координаты ячеек тетриса
@@ -29,7 +30,6 @@
  Сколько есть вариантов одной фигуры (при повороте) - 4
 */
 
-
 #define MAX_LEVEL 6000
 #define SCORES_PER_LEVEL 600
 
@@ -37,16 +37,20 @@
   "ячейка" -  1x1 блок внутри поля тетриса
  */
 typedef enum {
-  TC_EMPTY, TC_CELLI, TC_CELLJ, TC_CELLL, TC_CELLO, TC_CELLS, TC_CELLT, TC_CELLZ
+  TC_EMPTY,
+  TC_CELLI,
+  TC_CELLJ,
+  TC_CELLL,
+  TC_CELLO,
+  TC_CELLS,
+  TC_CELLT,
+  TC_CELLZ
 } tetris_cell;
 
 /*
   A "type" is a type/shape of a tetromino.  Not including orientation.
  */
-typedef enum {
-  TET_I, TET_J, TET_L, TET_O, TET_S, TET_T, TET_Z
-} tetris_type;
-
+typedef enum { TET_I, TET_J, TET_L, TET_O, TET_S, TET_T, TET_Z } tetris_type;
 
 /*
   A row,column pair.  Negative numbers allowed, because we need them for
@@ -71,18 +75,23 @@ typedef struct {
   All possible moves to give as input to the game.
  */
 typedef enum {
-  TM_LEFT, TM_RIGHT, TM_CLOCK, TM_COUNTER, TM_DROP, TM_HOLD, TM_NONE
+  TM_LEFT,
+  TM_RIGHT,
+  TM_CLOCK,
+  TM_COUNTER,
+  TM_DROP,
+  TM_HOLD,
+  TM_NONE
 } tetris_move;
 
 /*
   A game object!
  */
-typedef struct GameStruct{
-
-//Field
+typedef struct GameStruct {
+  // Field
   int rows, cols;
   char *board;
-  
+
   int points;
   int level;
   /*
@@ -103,14 +112,15 @@ typedef struct GameStruct{
   int scores_remaining;
 } GameStruct;
 
-
-extern tetris_location tet_templates[7][4][4]; //7 - кол-во фигур, 4 - позиции фигуры (при повороте), 4*4 - размер
+extern tetris_location tet_templates[7][4]
+                                    [4];  // 7 - кол-во фигур, 4 - позиции
+                                          // фигуры (при повороте), 4*4 - размер
 
 /*
   This array tells you how many ticks per gravity by level.  Decreases as level
   increases, to add difficulty.
  */
-extern int GRAVITY_LEVEL[MAX_LEVEL+1];
+extern int GRAVITY_LEVEL[MAX_LEVEL + 1];
 
 // Data structure manipulation.
 void init(GameStruct *obj, int rows, int cols);
@@ -128,18 +138,15 @@ void Print(GameStruct *obj, FILE *f);
 void AccelerationToBottom(GameStruct *obj);
 
 //Установить фигуру на определенные кординаты (row and col)
-static void SetBlock(GameStruct *obj, int row, int column, char value)
-{
+static void SetBlock(GameStruct *obj, int row, int column, char value) {
   obj->board[obj->cols * row + column] = value;
 }
 
 void PutFigure(GameStruct *obj, Block block);
 void RemoveBlock(GameStruct *obj, Block block);
-static int random_tetromino(void) {
-  return rand() % 7;
-}
+int random_tetromino(void);
 
- // Проверка может ли фигура быть установлена на игровом поле
+// Проверка может ли фигура быть установлена на игровом поле
 bool CheckIfBlockFits(GameStruct *obj, Block block);
 
 void Rotate(GameStruct *obj, int direction);
@@ -152,7 +159,4 @@ void ShiftLines(GameStruct *obj, int r);
 int CheckLines(GameStruct *obj);
 void AdjustScore(GameStruct *obj, int lines_cleared);
 bool Game_over(GameStruct *obj);
-#endif // TETRIS_H
-
-
-
+#endif  // TETRIS_H
