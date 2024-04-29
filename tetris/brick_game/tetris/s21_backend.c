@@ -65,9 +65,6 @@ char GetBlock(GameStruct *obj, int row, int column)
     return res;
 }
 
-
-
-
  // проверяет находится ли фигура на игровом поле
 
 bool CheckIfInsideTheBoard(GameStruct *obj, int row, int col)
@@ -77,8 +74,38 @@ bool CheckIfInsideTheBoard(GameStruct *obj, int row, int col)
 return false;
 }
 
+void PutFigure(GameStruct *obj, Block block)
+{
+  int i;
+  for (i = 0; i < 4; i++) {
+    tetris_location cell = tet_templates[block.a][block.orientation][i];
+    SetBlock(obj, block.loc.row + cell.row, block.loc.col + cell.col,
+           COORDINATE_TO_CELL(block.a));
+  }
+}
 
+void RemoveBlock(GameStruct *obj, Block block)
+{
+  int i;
+  for (i = 0; i < 4; i++) {
+    tetris_location cell = tet_templates[block.a][block.orientation][i];
+    SetBlock(obj, block.loc.row + cell.row, block.loc.col + cell.col, TC_EMPTY);
+  }
+}
 
+bool CheckIfBlockFits(GameStruct *obj, Block block)
+{
+  int SIZE, r, c;
+  for (SIZE = 0; SIZE < 4; SIZE++) {
+    tetris_location cell = tet_templates[block.a][block.orientation][SIZE];
+    r = block.loc.row + cell.row;
+    c = block.loc.col + cell.col;
+    if (!CheckIfInsideTheBoard(obj, r, c) || TC_IS_FILLED(GetBlock(obj, r, c))) {
+      return false;
+    }
+  }
+  return true;
+}
 
 void RandomFallingBlock(GameStruct *obj)
 {

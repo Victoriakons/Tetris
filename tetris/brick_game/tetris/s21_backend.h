@@ -12,32 +12,29 @@
 #define COORDINATE_TO_CELL(x) ((x)+1)
 
 /*
-  Strings for how you would print a tetris board.
+  Strings для поля тетриса
  */
 #define TC_EMPTY_STR " "
 #define TC_BLOCK_STR "\u2588" //Символ \u2588 - это символ игральной кости в Юникоде, который часто используется для представления блоков
 
 /*
-  Questions about a tetris cell.
+  Координаты ячеек тетриса
  */
 #define TC_IS_EMPTY(x) ((x) == TC_EMPTY)
 #define TC_IS_FILLED(x) (!TC_IS_EMPTY(x))
 
 /*
-  How many cells in a tetromino? - 4
-
-  How many tetrominos? - 7
-
-  How many orientations of a tetromino? - 4
+ Кол-во фигур - 7
+ Из скольки ячеек состоит- 4
+ Сколько есть вариантов одной фигуры (при повороте) - 4
 */
 
-//Level constants.
 
 #define MAX_LEVEL 6000
 #define SCORES_PER_LEVEL 600
 
 /*
-  A "cell" is a 1x1 block within a tetris board.
+  "ячейка" -  1x1 блок внутри поля тетриса
  */
 typedef enum {
   TC_EMPTY, TC_CELLI, TC_CELLJ, TC_CELLL, TC_CELLO, TC_CELLS, TC_CELLT, TC_CELLZ
@@ -129,53 +126,20 @@ bool PerformTick(GameStruct *obj, tetris_move move);
 void Print(GameStruct *obj, FILE *f);
 void AccelerationToBottom(GameStruct *obj);
 
-
 //Установить фигуру на определенные кординаты (row and col)
 static void SetBlock(GameStruct *obj, int row, int column, char value)
 {
   obj->board[obj->cols * row + column] = value;
 }
 
-
-static void PutFigure(GameStruct *obj, Block block)
-{
-  int i;
-  for (i = 0; i < 4; i++) {
-    tetris_location cell = tet_templates[block.a][block.orientation][i];
-    SetBlock(obj, block.loc.row + cell.row, block.loc.col + cell.col,
-           COORDINATE_TO_CELL(block.a));
-  }
-}
-
-
-
-static void RemoveBlock(GameStruct *obj, Block block)
-{
-  int i;
-  for (i = 0; i < 4; i++) {
-    tetris_location cell = tet_templates[block.a][block.orientation][i];
-    SetBlock(obj, block.loc.row + cell.row, block.loc.col + cell.col, TC_EMPTY);
-  }
-}
-
+void PutFigure(GameStruct *obj, Block block);
+void RemoveBlock(GameStruct *obj, Block block);
 static int random_tetromino(void) {
   return rand() % 7;
 }
 
  // Проверка может ли фигура быть установлена на игровом поле
-static bool CheckIfBlockFits(GameStruct *obj, Block block)
-{
-  int SIZE, r, c;
-  for (SIZE = 0; SIZE < 4; SIZE++) {
-    tetris_location cell = tet_templates[block.a][block.orientation][SIZE];
-    r = block.loc.row + cell.row;
-    c = block.loc.col + cell.col;
-    if (!CheckIfInsideTheBoard(obj, r, c) || TC_IS_FILLED(GetBlock(obj, r, c))) {
-      return false;
-    }
-  }
-  return true;
-}
+bool CheckIfBlockFits(GameStruct *obj, Block block);
 
 void Rotate(GameStruct *obj, int direction);
 bool CheckIfLineIsFull(GameStruct *obj, int i);

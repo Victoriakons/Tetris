@@ -58,15 +58,18 @@ DestroyGame(tg);
 }
 END_TEST
 
-//тут правильно?
+//problems
 START_TEST(removeblock_test) {
-//char ch = '0';
 GameStruct *tg = NULL;
 tg = CreateGame(20, 10);
-//SetBlock(tg, 5, 5, ch);
-PutFigure(tg, tg->falling);
-RemoveBlock(tg, tg->falling);
-ck_assert_int_eq(tg->falling.a, 0);
+Block fig;
+fig.a = 0;
+fig.orientation = 0;
+fig.loc.col = 0;
+fig.loc.row = 0;
+PutFigure(tg, fig);
+RemoveBlock(tg, fig);
+ck_assert_int_eq(fig.a, 0);
 DestroyGame(tg);
 
 }
@@ -129,8 +132,11 @@ END_TEST
 
 
 START_TEST(AccelerationToBottom_test) {
-  // GameStruct *tg = NULL;
-  // tg = CreateGame(10,20);
+  GameStruct *tg = NULL;
+  tg = CreateGame(10,20);
+  AccelerationToBottom(tg);
+  ck_assert(tg->falling.loc.row-- || tg->falling.loc.row++ );
+  DestroyGame(tg);
 
 }
 END_TEST
