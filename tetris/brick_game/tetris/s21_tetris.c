@@ -34,6 +34,41 @@ void save(GameStruct *game, WINDOW *w)
   exit(EXIT_SUCCESS);
 }
 
+GameStruct *Load(FILE *f)
+{
+  GameStruct *obj = malloc(sizeof(GameStruct));
+  fread(obj, sizeof(GameStruct), 1, f);
+  obj->board = malloc(obj->rows * obj->cols);
+  fread(obj->board, sizeof(char), obj->rows * obj->cols, f);
+  return obj;
+}
+
+/*
+  Save a game to a file.
+ */
+void Save(GameStruct *obj, FILE *f)
+{
+  fwrite(obj, sizeof(GameStruct), 1, f);
+  fwrite(obj->board, sizeof(char), obj->rows * obj->cols, f);
+}
+
+/*
+  Print a game board to a file.  Really just for early debugging.
+ */
+void Print(GameStruct *obj, FILE *f) {
+  int i, j;
+  for (i = 0; i < obj->rows; i++) {
+    for (j = 0; j < obj->cols; j++) {
+      if (TC_IS_EMPTY(GetBlock(obj, i, j))) {
+        fputs(TC_EMPTY_STR, f);
+      } else {
+        fputs(TC_BLOCK_STR, f);
+      }
+    }
+    fputc('\n', f);
+  }
+}
+
 //Main tetris game!
  
 int main(int argc, char **argv)

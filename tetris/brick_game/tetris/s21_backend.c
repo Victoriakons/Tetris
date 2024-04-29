@@ -66,7 +66,6 @@ char GetBlock(GameStruct *obj, int row, int column)
 }
 
  // проверяет находится ли фигура на игровом поле
-
 bool CheckIfInsideTheBoard(GameStruct *obj, int row, int col)
 {
     if (0 <= row && row < obj->rows && 0 <= col && col < obj->cols)
@@ -74,6 +73,7 @@ bool CheckIfInsideTheBoard(GameStruct *obj, int row, int col)
 return false;
 }
 
+//ставит фигуру на игровое поле
 void PutFigure(GameStruct *obj, Block block)
 {
   int i;
@@ -84,6 +84,7 @@ void PutFigure(GameStruct *obj, Block block)
   }
 }
 
+//удаляет блок (фигуру)
 void RemoveBlock(GameStruct *obj, Block block)
 {
   int i;
@@ -93,6 +94,7 @@ void RemoveBlock(GameStruct *obj, Block block)
   }
 }
 
+//проверяет может ли каждая клетка блока (фигуры) поместиться на игровом поле
 bool CheckIfBlockFits(GameStruct *obj, Block block)
 {
   int SIZE, r, c;
@@ -107,6 +109,7 @@ bool CheckIfBlockFits(GameStruct *obj, Block block)
   return true;
 }
 
+//Случайная фигура, падающая на игровон поле сверху
 void RandomFallingBlock(GameStruct *obj)
 {
   obj->falling = obj->next; //next - новый падающий объект
@@ -118,7 +121,10 @@ void RandomFallingBlock(GameStruct *obj)
 
 
 /*
-  Tick gravity, and move the block down if gravity should act.
+  Tick gravity: в зависимости от значения в счетчике , проверяет может ли фигура упасть (Если ticks_till_gravity = 0 или меньше - процесс падения блока начинается).
+  Если может, то блок убирается со своей настоящей позиции, спускается вниз по row, далее проверяется помещается ли фигура на поле.
+  Если помещается, то обновляем GRAVITY_LEVEL и продолжаем падение блока (фигуры), если фигура не помещается - поставить ее обратно на 
+  прежнюю позицию и сгенерировать новый падающий блок (фигуру).
  */
 void Tick(GameStruct *obj)
 {
@@ -152,7 +158,8 @@ void Move(GameStruct *obj, int direction)
 }
 
 
-//ускорить падение вниз
+//ускорить падение вниз по row: сначала удаляем блок с его настоящей позиции, проверяем помещается ли  он на поле, если помещается - ускоряем падение вниз.
+//Когда блок перестанет помещаться, нужно поставить его в позицию до и схаранить 
 
 void AccelerationToBottom(GameStruct *obj)
 {
@@ -194,10 +201,8 @@ void Rotate(GameStruct *obj, int direction)
   PutFigure(obj, obj->falling);
 }
 
-/*
-  Поменять фигуру в окне с падающей
- */
-static void TakeFromHoldBuffer(GameStruct *obj)
+//Поменять фигуру в окне с падающей (stored block -> falling block)
+void TakeFromHoldBuffer(GameStruct *obj)
 {
   RemoveBlock(obj, obj->falling);
   if (obj->stored.a == -1) {
@@ -257,7 +262,7 @@ bool CheckIfLineIsFull(GameStruct *obj, int i)
 /*
   Shift every row above r down one.
  */
-static void ShiftLines(GameStruct *obj, int r)
+void ShiftLines(GameStruct *obj, int r)
 {
   int i, j;
   for (i = r-1; i >= 0; i--) {
@@ -271,7 +276,7 @@ static void ShiftLines(GameStruct *obj, int r)
 /*
   Находит заполненые ряды и удаляет их (возвращает кол-во удаленных рядов)
  */
-static int CheckLines(GameStruct *obj)
+int CheckLines(GameStruct *obj)
 {
   int i, nlines = 0;
   RemoveBlock(obj, obj->falling); // don't want to mess up falling block
@@ -291,7 +296,7 @@ static int CheckLines(GameStruct *obj)
 /*
   Score = кол-во удаленных рядов
  */
-static void AdjustScore(GameStruct *obj, int lines_cleared)
+void AdjustScore(GameStruct *obj, int lines_cleared)
 {
   static int line_multiplier[] = {0, 100, 300, 700, 1500};
   obj->points += line_multiplier[lines_cleared] + (obj->level);
@@ -307,7 +312,7 @@ static void AdjustScore(GameStruct *obj, int lines_cleared)
 /*
 Возвращает True, если игра закончега
  */
-static bool Game_over(GameStruct *obj)
+bool Game_over(GameStruct *obj)
 {
   int i, j;
   bool over = false;
@@ -389,38 +394,4 @@ void Delete(GameStruct *obj) {
 /*
   Load a game from a file.
  */
-GameStruct *Load(FILE *f)
-{
-  GameStruct *obj = malloc(sizeof(GameStruct));
-  fread(obj, sizeof(GameStruct), 1, f);
-  obj->board = malloc(obj->rows * obj->cols);
-  fread(obj->board, sizeof(char), obj->rows * obj->cols, f);
-  return obj;
-}
-
-/*
-  Save a game to a file.
- */
-void Save(GameStruct *obj, FILE *f)
-{
-  fwrite(obj, sizeof(GameStruct), 1, f);
-  fwrite(obj->board, sizeof(char), obj->rows * obj->cols, f);
-}
-
-/*
-  Print a game board to a file.  Really just for early debugging.
- */
-void Print(GameStruct *obj, FILE *f) {
-  int i, j;
-  for (i = 0; i < obj->rows; i++) {
-    for (j = 0; j < obj->cols; j++) {
-      if (TC_IS_EMPTY(GetBlock(obj, i, j))) {
-        fputs(TC_EMPTY_STR, f);
-      } else {
-        fputs(TC_BLOCK_STR, f);
-      }
-    }
-    fputc('\n', f);
-  }
-}
 

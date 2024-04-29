@@ -47,6 +47,7 @@ typedef enum {
   TET_I, TET_J, TET_L, TET_O, TET_S, TET_T, TET_Z
 } tetris_type;
 
+
 /*
   A row,column pair.  Negative numbers allowed, because we need them for
   offsets.
@@ -146,6 +147,11 @@ bool CheckIfLineIsFull(GameStruct *obj, int i);
 void RandomFallingBlock(GameStruct *obj);
 void Tick(GameStruct *obj);
 void Move(GameStruct *obj, int direction);
+void TakeFromHoldBuffer(GameStruct *obj);
+void ShiftLines(GameStruct *obj, int r);
+int CheckLines(GameStruct *obj);
+void AdjustScore(GameStruct *obj, int lines_cleared);
+bool Game_over(GameStruct *obj);
 #endif // TETRIS_H
 
 

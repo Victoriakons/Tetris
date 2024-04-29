@@ -11,8 +11,6 @@
 // #include "brick_game/tetris/backend.c"
 
 
-
-
 START_TEST(GetBlockSetBlock_test) {
 GameStruct *tg = NULL;
   char ch = '0';
@@ -39,12 +37,11 @@ DestroyGame(tg);
 END_TEST
 
 
-//какая-то херня, как правильно проверить, что фигура была поставлена на поле?
 START_TEST(putfigure_test) {
 GameStruct *tg = NULL;
 tg = CreateGame(20, 10);
 PutFigure(tg, tg->falling);
-// ck_assert(tg->falling.a != 0);
+ck_assert(tg->falling.a != 0);
 DestroyGame(tg);
 }
 END_TEST
@@ -58,7 +55,7 @@ DestroyGame(tg);
 }
 END_TEST
 
-//problems
+
 START_TEST(removeblock_test) {
 GameStruct *tg = NULL;
 tg = CreateGame(20, 10);
@@ -80,7 +77,10 @@ START_TEST(random_tetromino_test) {
   GameStruct *tg = NULL;
   tg = CreateGame(10,20);
   tg->falling.a = random_tetromino();
-  ck_assert_int_ne(tg->falling.a, 0);
+  tg->falling.orientation = 0;
+  tg->falling.loc.row = 0;
+
+  ck_assert(tg->falling.a >= 0);
   DestroyGame(tg);
 }
 END_TEST
@@ -102,7 +102,7 @@ START_TEST(RandomFallingBlock_test) {
   GameStruct *tg = NULL;
   tg = CreateGame(10,20);
   RandomFallingBlock(tg);
-  ck_assert(tg->next.a != 0);
+  ck_assert(tg->falling.loc.col);
   DestroyGame(tg);
 }
 END_TEST
@@ -112,6 +112,18 @@ START_TEST(Tick_test) {
   GameStruct *tg = NULL;
   tg = CreateGame(10,20);
   tg->ticks_till_gravity = 2;
+  Tick(tg);
+  ck_assert_int_eq(GRAVITY_LEVEL[tg->level], 50);
+  DestroyGame(tg);
+
+}
+END_TEST
+
+START_TEST(Tick_test_2) {
+  GameStruct *tg = NULL;
+  tg = CreateGame(10,20);
+  tg->ticks_till_gravity = 0;
+  Tick(tg);
   ck_assert_int_eq(GRAVITY_LEVEL[tg->level], 50);
   DestroyGame(tg);
 
@@ -128,8 +140,14 @@ START_TEST(Move_test) {
 }
 END_TEST
 
-
-
+START_TEST(Move_test_2) {
+  GameStruct *tg = NULL;
+  tg = CreateGame(10,20);
+  Move(tg, 1);
+  ck_assert(tg->falling.loc.col = 1);
+  DestroyGame(tg);
+}
+END_TEST
 
 START_TEST(AccelerationToBottom_test) {
   GameStruct *tg = NULL;
@@ -141,18 +159,30 @@ START_TEST(AccelerationToBottom_test) {
 }
 END_TEST
 
-
 START_TEST(Rotate_test) {
-  // GameStruct *tg = NULL;
-  // tg = CreateGame(10,20);
+  GameStruct *tg = NULL;
+  tg = CreateGame(10,20);
+  Rotate(tg, 1);
+  ck_assert(tg->falling.orientation = (tg->falling.orientation + 1) % 4);
+  DestroyGame(tg);
 
 }
 END_TEST
 
-
 START_TEST(TakeFromHoldBuffer_test) {
-  // GameStruct *tg = NULL;
-  // tg = CreateGame(10,20);
+  GameStruct *tg = NULL;
+  tg = CreateGame(10,20);
+  TakeFromHoldBuffer(tg);
+  ck_assert(tg->falling.a = tg->stored.a);
+}
+END_TEST
+
+START_TEST(TakeFromHoldBuffer_test_2) {
+  GameStruct *tg = NULL;
+  tg = CreateGame(10,20);
+  tg->stored.a = 2;
+  TakeFromHoldBuffer(tg);
+  ck_assert(tg->falling.a = tg->stored.a);
 }
 END_TEST
 
@@ -167,34 +197,56 @@ START_TEST(CheckIfLineIsFull_test) {
 END_TEST
 
 
-
+//не понимаю как проверить
 START_TEST(ShiftLines_test) {
-  // GameStruct *tg = NULL;
-  // tg = CreateGame(10,20);
+  int r = 1;
+  GameStruct *tg = NULL;
+  tg = CreateGame(10,20);
+  ShiftLines(tg, r);
+  DestroyGame(tg);
 }
 END_TEST
 
 START_TEST(CheckLines_test) {
-  // GameStruct *tg = NULL;
-  // tg = CreateGame(10,20);
+  GameStruct *tg = NULL;
+  tg = CreateGame(10,20);
+  CheckLines(tg);
+  ck_assert(tg->falling.a != 0);
+  DestroyGame(tg);
 
 }
 END_TEST
 
 START_TEST(AdjustScore_test) {
-  // GameStruct *tg = NULL;
-  // tg = CreateGame(10,20);
+  GameStruct *tg = NULL;
+  tg = CreateGame(10,20);
+  AdjustScore(tg, 2);
+  ck_assert(tg->scores_remaining = 598);
+  DestroyGame(tg);
 
 }
 END_TEST
 
+
+//не понятно как проверить
 START_TEST(Game_over_test) {
+  GameStruct *tg = NULL;
+  tg = CreateGame(10,20);
+  tg->cols = 20;
+  // Game_over(tg);
+  ck_assert_int_eq(Game_over(tg), 0);
 
 }
 END_TEST
 
-
-
+START_TEST(PerformTick_test) {
+  GameStruct *tg = NULL;
+  tg = CreateGame(10,20);
+  tetris_move act = TM_RIGHT;
+  PerformTick(tg, act);
+  ck_assert_int_eq(PerformTick(tg, act), 1);
+}
+END_TEST
 
 int main() {
   Suite *s1 = suite_create("Core");
@@ -212,17 +264,19 @@ int main() {
   tcase_add_test(tc_1, CheckIfBlockFits_test);
   tcase_add_test(tc_1, RandomFallingBlock_test);
   tcase_add_test(tc_1, Tick_test);
+  tcase_add_test(tc_1, Tick_test_2);
   tcase_add_test(tc_1, Move_test);
+  tcase_add_test(tc_1, Move_test_2);
   tcase_add_test(tc_1, CheckIfLineIsFull_test);
   tcase_add_test(tc_1, AccelerationToBottom_test);
   tcase_add_test(tc_1, Rotate_test);
   tcase_add_test(tc_1, TakeFromHoldBuffer_test);
+  tcase_add_test(tc_1, TakeFromHoldBuffer_test_2);
   tcase_add_test(tc_1, ShiftLines_test); 
-   tcase_add_test(tc_1, CheckLines_test);
+  tcase_add_test(tc_1, CheckLines_test);
   tcase_add_test(tc_1, AdjustScore_test);
   tcase_add_test(tc_1, Game_over_test);
-
-
+  tcase_add_test(tc_1, PerformTick_test);
 
   srunner_set_fork_status(sr, CK_NOFORK);
   srunner_run_all(sr, CK_ENV);

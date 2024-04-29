@@ -54,7 +54,7 @@ void display_piece(WINDOW *w, Block block)
     return;
   }
   for (b = 0; b < 4; b++) {
-    c = tet_templates[block.a][block.a][b];
+    c = tet_templates[block.a][block.orientation][b];
     wmove(w, c.row + 1, c.col * COLS_PER_CELL + 1);
     ADD_BLOCK(w, COORDINATE_TO_CELL(block.a));
   }
